@@ -16,6 +16,7 @@ let deeplinkUrls;
 let safelinksUrls;
 let mailServicesUrls;
 let showWindowFrame;
+let quieroavisosdecorreo;
 let $this;
 
 //Setted by cmdLine to initial minimization
@@ -30,7 +31,10 @@ class MailWindowController {
     initialMinimization.domReady = global.cmdLine.indexOf("--minimized") != -1;
   }
   reloadSettings() {
-    // Get configurations.
+      // Get configurations.
+    quieroavisosdecorreo = settings.getSync("quieroavisosdecorreo") === undefined ||
+      settings.getSync("quieroavisosdecorreo") === true;
+
     showWindowFrame =
       settings.getSync("showWindowFrame") === undefined ||
       settings.getSync("showWindowFrame") === true;
@@ -69,7 +73,8 @@ class MailWindowController {
       mainMailServiceUrl: mainMailServiceUrl,
       deeplinkUrls: deeplinkUrls,
       mailServicesUrls: mailServicesUrls,
-      safelinksUrls: safelinksUrls,
+        safelinksUrls: safelinksUrls,
+        quieroavisosdecorreo: quieroavisosdecorreo,
     });
   }
   init() {
@@ -113,7 +118,9 @@ class MailWindowController {
         this.win.webContents.insertCSS(getClientFile("no-frame.css"));
       }
 
-      this.addUnreadNumberObserver();
+      if (quieroavisosdecorreo) {
+        this.addUnreadNumberObserver();
+      }
       if (!initialMinimization.domReady) {
         this.win.show();
       }
